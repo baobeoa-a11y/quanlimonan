@@ -1,0 +1,95 @@
+﻿@model IEnumerable<QuanLyMonAn.Models.DishCategory_BIT240154>
+
+@{
+    ViewData["Title"] = "Dish Categories";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Dish Categories</h2>
+
+        <a asp-controller="Dish"
+           asp-action="Index"
+           class="btn btn-secondary">
+            Back to Dishes
+        </a>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+        </div>
+    }
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-warning">
+            No categories found.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Category name</th>
+                        <th>Description</th>
+                        <th>Number of dishes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var category in Model)
+                    {
+                        <tr>
+                            <td>@category.Id</td>
+                            <td>@category.Name</td>
+                            <td>
+                                @(string.IsNullOrWhiteSpace(category.Description)
+                                    ? "No description"
+                                    : category.Description)
+                            </td>
+                            <td>@(category.Dishes?.Count ?? 0)</td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a asp-controller="DishCategory"
+                                       asp-action="Detail"
+                                       asp-route-id="@category.Id"
+                                       class="btn btn-sm btn-primary">
+                                        Detail
+                                    </a>
+
+                                    <a asp-controller="DishCategory"
+                                       asp-action="Delete"
+                                       asp-route-id="@category.Id"
+                                       class="btn btn-sm btn-danger">
+                                        Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -1,0 +1,217 @@
+﻿@model IEnumerable<QuanLyMonAn.Models.Dish_BIT240154>
+
+@{
+    ViewData["Title"] = "Dish Management";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Dish Management</h2>
+
+        <a asp-action="Create" class="btn btn-success">
+            + Add Dish
+        </a>
+    </div>
+
+    <!-- SEARCH AND FILTER -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            Search and Filter
+        </div>
+
+        <div class="card-body">
+            <form asp-action="Index" method="get">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Dish name</label>
+                        <input type="text"
+                               name="searchName"
+                               value="@Context.Request.Query["searchName"]"
+                               class="form-control"
+                               placeholder="Enter dish name" />
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label">Category ID</label>
+                        <input type="number"
+                               name="categoryId"
+                               value="@Context.Request.Query["categoryId"]"
+                               class="form-control"
+                               min="1" />
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label">Availability</label>
+                        <select name="isAvailable" class="form-select">
+                            <option value="">All</option>
+                            <option value="true"
+                                    selected="@(Context.Request.Query["isAvailable"] == "true")">
+                                Available
+                            </option>
+                            <option value="false"
+                                    selected="@(Context.Request.Query["isAvailable"] == "false")">
+                                Unavailable
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label">Minimum price</label>
+                        <input type="number"
+                               name="minPrice"
+                               value="@Context.Request.Query["minPrice"]"
+                               class="form-control"
+                               min="0"
+                               step="0.01" />
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label">Maximum price</label>
+                        <input type="number"
+                               name="maxPrice"
+                               value="@Context.Request.Query["maxPrice"]"
+                               class="form-control"
+                               min="0"
+                               step="0.01" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Sort by</label>
+                        <select name="sortBy" class="form-select">
+                            <option value="">Default</option>
+                            <option value="price_asc"
+                                    selected="@(Context.Request.Query["sortBy"] == "price_asc")">
+                                Price: Low to High
+                            </option>
+                            <option value="price_desc"
+                                    selected="@(Context.Request.Query["sortBy"] == "price_desc")">
+                                Price: High to Low
+                            </option>
+                            <option value="time_asc"
+                                    selected="@(Context.Request.Query["sortBy"] == "time_asc")">
+                                Preparation Time: Low to High
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-8 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            Search
+                        </button>
+
+                        <a asp-action="Index" class="btn btn-secondary">
+                            Clear filters
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- DISH LIST -->
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-warning">
+            No dishes found.
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            Number of dishes: @Model.Count()
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Dish name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Preparation time</th>
+                        <th>Preparation type</th>
+                        <th>Status</th>
+                        <th style="min-width: 320px;">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var dish in Model)
+                    {
+                        <tr>
+                            <td>@dish.Id</td>
+                            <td>@dish.Name</td>
+                            <td>@(dish.DishCategory?.Name ?? "Unknown")</td>
+                            <td>@dish.Price.ToString("N2")</td>
+                            <td>@dish.PreparationTime minutes</td>
+
+                            <td>
+                                @if (dish.PreparationTime <= 15)
+                                {
+                                    <span class="badge bg-success">
+                                        Quick / Nhanh
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info text-dark">
+                                        Regular / Thông thường
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (dish.IsAvailable)
+                                {
+                                    <span class="badge bg-success">
+                                        Available / Đang bán
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">
+                                        Unavailable / Ngừng bán
+                                    </span>
+                                }
+                            </td>
+
+                            <!-- FOUR ACTION BUTTONS -->
+                            <td>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a asp-controller="Dish"
+                                       asp-action="Detail"
+                                       asp-route-id="@dish.Id"
+                                       class="btn btn-sm btn-primary">
+                                        Detail
+                                    </a>
+
+                                    <a asp-controller="Dish"
+                                       asp-action="Edit"
+                                       asp-route-id="@dish.Id"
+                                       class="btn btn-sm btn-warning">
+                                        Edit
+                                    </a>
+
+                                    <a asp-controller="Dish"
+                                       asp-action="Delete"
+                                       asp-route-id="@dish.Id"
+                                       class="btn btn-sm btn-danger">
+                                        Delete
+                                    </a>
+
+                                    <a asp-controller="DishImage"
+                                       asp-action="Index"
+                                       asp-route-dishId="@dish.Id"
+                                       class="btn btn-sm btn-info">
+                                        Images
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

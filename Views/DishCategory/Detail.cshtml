@@ -1,0 +1,103 @@
+﻿@model QuanLyMonAn.Models.DishCategory_BIT240154
+
+@{
+    ViewData["Title"] = "Category Details";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Category Details</h2>
+        </div>
+
+        <div class="card-body">
+            @if (Model == null)
+            {
+                <div class="alert alert-danger">
+                    Category not found.
+                </div>
+            }
+            else
+            {
+                <dl class="row">
+                    <dt class="col-sm-3">Category ID</dt>
+                    <dd class="col-sm-9">@Model.Id</dd>
+
+                    <dt class="col-sm-3">Category name</dt>
+                    <dd class="col-sm-9">@Model.Name</dd>
+
+                    <dt class="col-sm-3">Description</dt>
+                    <dd class="col-sm-9">
+                        @(string.IsNullOrWhiteSpace(Model.Description)
+                            ? "No description"
+                            : Model.Description)
+                    </dd>
+                </dl>
+
+                <hr />
+
+                <h4>Dishes in this category</h4>
+
+                @if (Model.Dishes == null || !Model.Dishes.Any())
+                {
+                    <div class="alert alert-info">
+                        This category has no dishes.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Dish name</th>
+                                    <th>Price</th>
+                                    <th>Preparation time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var dish in Model.Dishes)
+                                {
+                                    <tr>
+                                        <td>@dish.Id</td>
+                                        <td>@dish.Name</td>
+                                        <td>@dish.Price.ToString("N2")</td>
+                                        <td>@dish.PreparationTime minutes</td>
+                                        <td>
+                                            @if (dish.IsAvailable)
+                                            {
+                                                <span class="badge bg-success">
+                                                    Available
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">
+                                                    Unavailable
+                                                </span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="card-footer">
+            <a asp-action="Index" class="btn btn-secondary">
+                Back to Categories
+            </a>
+
+            <a asp-controller="Dish"
+               asp-action="Index"
+               class="btn btn-primary">
+                View All Dishes
+            </a>
+        </div>
+    </div>
+</div>

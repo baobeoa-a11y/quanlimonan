@@ -1,0 +1,125 @@
+﻿@model QuanLyMonAn.Models.Dish_BIT240154
+
+@{
+    ViewData["Title"] = "Dish Details";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Dish Details</h2>
+        </div>
+
+        <div class="card-body">
+            <h3>@Model.Name</h3>
+
+            <p>
+                <strong>Category:</strong>
+                @(Model.DishCategory?.Name ?? "Unknown")
+            </p>
+
+            <p>
+                <strong>Price:</strong>
+                @Model.Price.ToString("N2")
+            </p>
+
+            <p>
+                <strong>Preparation time:</strong>
+                @Model.PreparationTime minutes
+            </p>
+
+            <p>
+                <strong>Preparation type:</strong>
+                @if (Model.PreparationTime <= 15)
+                {
+                    <span class="badge bg-success">Quick / Nhanh</span>
+                }
+                else
+                {
+                    <span class="badge bg-info text-dark">
+                        Regular / Thông thường
+                    </span>
+                }
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                @if (Model.IsAvailable)
+                {
+                    <span class="badge bg-success">
+                        Available / Đang bán
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">
+                        Unavailable / Ngừng bán
+                    </span>
+                }
+            </p>
+
+            <p>
+                <strong>Description:</strong>
+                @(string.IsNullOrWhiteSpace(Model.Description)
+                    ? "No description."
+                    : Model.Description)
+            </p>
+
+            <hr />
+
+            <h4>Dish Images</h4>
+
+            @if (Model.Images == null || !Model.Images.Any())
+            {
+                <div class="alert alert-warning">
+                    This dish has no images.
+                </div>
+            }
+            else
+            {
+                <div class="row g-3">
+                    @foreach (var image in Model.Images)
+                    {
+                        <div class="col-md-4 col-sm-6">
+                            <div class="card h-100">
+                                <img src="@image.ImageUrl"
+                                     class="card-img-top"
+                                     alt="@Model.Name"
+                                     style="height:220px; object-fit:cover;"
+                                     onerror="this.style.display='none';" />
+
+                                <div class="card-body text-center">
+                                    @if (image.IsThumbnail)
+                                    {
+                                        <span class="badge bg-success">
+                                            Thumbnail / Ảnh đại diện
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            Additional image / Ảnh khác
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="card-footer d-flex gap-2">
+            <a asp-action="Index" class="btn btn-secondary">
+                Back to list
+            </a>
+
+            <a asp-controller="DishImage"
+               asp-action="Index"
+               asp-route-dishId="@Model.Id"
+               class="btn btn-info">
+                Manage images
+            </a>
+        </div>
+    </div>
+</div>
